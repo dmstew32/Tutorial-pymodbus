@@ -16,6 +16,15 @@ logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
+# ============================================================
+# SERIAL PORT CONFIGURATION
+# TODO: Change these settings to match your hardware
+# ============================================================
+PORT = "COM10"         # COM port (server port - must be different from client)
+BAUDRATE = 9600        # Communication speed
+BYTESIZE = 8           # Data bits
+PARITY = 'N'           # Parity: 'N'=None, 'E'=Even, 'O'=Odd
+STOPBITS = 1           # Stop bits
 
 def create_datastore():
     """
@@ -31,12 +40,10 @@ def create_datastore():
     - 0x002A-0x002F
     - 0x01F4-0x01F9
     """
-    # Create a block of 1000 registers (addresses 0-999)
-    # All registers initialize to 0
+    # Create a block of 1000 registers (addresses 0-999) intialized to 0
     holding_registers = ModbusSequentialDataBlock(0, [0] * 1000)
     
     # Optional: Set some registers to specific values for testing
-    # Set register at address 0x01F4 (500) to value 42
     # Note: setValues uses 1-based addressing, so we add 1 to the address
     holding_registers.setValues(0x01F4 + 1, [42, 43, 44, 45, 46, 47])
     
@@ -63,11 +70,8 @@ def run_server():
     )
     
     # Create the server context
-    # single=True means all slave IDs share the same datastore
+    # single=True means the server responds to ANY slave address from client
     context = ModbusServerContext(devices=store, single=True)
-    
-    # If you want slave ID 0x9D specifically, use:
-    context = ModbusServerContext(devices={0x9D: store}, single=False)
     
     return context
 
@@ -76,13 +80,6 @@ if __name__ == "__main__":
     """
     Main entry point - runs when you execute this script.
     """
-    # Serial port settings
-    # TODO: Change these to match your hardware
-    PORT = "COM10"         # Change to your actual port (COM3, COM4, etc.)
-    BAUDRATE = 9600        # Communication speed
-    BYTESIZE = 8           # Data bits
-    PARITY = 'N'           # Parity: 'N'=None, 'E'=Even, 'O'=Odd
-    STOPBITS = 1           # Stop bits
     
     print("=" * 60)
     print("Modbus RTU Server Starting...")
@@ -91,7 +88,7 @@ if __name__ == "__main__":
     print(f"Baudrate: {BAUDRATE}")
     print(f"Parity:   {PARITY}")
     print(f"Stop bits: {STOPBITS}")
-    print("Slave Address: 0x9D (157 decimal)")
+    print("Accepts requests from any slave address")
     print("Listening for Read Holding Registers (0x03) commands...")
     print("=" * 60)
     print("\nPress Ctrl+C to stop the server\n")

@@ -12,8 +12,23 @@ logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
+# ============================================================
+# SERIAL PORT CONFIGURATION
+# TODO:Change these settings to match your hardware
+# ============================================================
+PORT = "COM11"         # COM port (client port - must be different from server)
+BAUDRATE = 9600        # Communication speed (must match server)
+BYTESIZE = 8           # Data bits
+PARITY = 'N'           # Parity: 'N'=None, 'E'=Even, 'O'=Odd
+STOPBITS = 1           # Stop bits
+TIMEOUT = 1            # Response timeout in seconds
 
-def read_registers(client, address, count, unit=0x9D):
+# ============================================================
+# MODBUS SETTINGS
+# ============================================================
+SLAVE_ADDRESS = 0x9D   # Slave address (157 decimal)
+
+def read_registers(client, address, count, unit=SLAVE_ADDRESS):
     """
     Read holding registers from the server.
     
@@ -50,13 +65,6 @@ def main():
     """
     Main function - connects to server and reads registers.
     """
-    # Serial port settings (must match the server)
-    PORT = "COM11"         # Change to your actual port (COM3, COM4, etc.)
-    BAUDRATE = 9600
-    BYTESIZE = 8
-    PARITY = 'N'
-    STOPBITS = 1
-    TIMEOUT = 1
     
     print("=" * 60)
     print("Modbus RTU Client Starting...")
